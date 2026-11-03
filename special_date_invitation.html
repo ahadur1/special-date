@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Special Question ❤️</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; width: 100%; min-height: 100%; }
+  body {
+    min-height: 100vh; overflow: hidden; display: grid; place-items: center;
+    font-family: Georgia, "Times New Roman", serif;
+    background: linear-gradient(135deg, #fff0f5, #ffe0ec, #fff5f8);
+    color: #d63384;
+  }
+  .card {
+    width: min(92vw, 620px); min-height: 440px; position: relative; z-index: 2;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 34px 22px; border: 1px solid #ffffffb8;
+    border-radius: 28px; background: #ffffffa8;
+    box-shadow: 0 18px 55px #d6338420; backdrop-filter: blur(8px);
+  }
+  .small-heart { font-size: 34px; margin-bottom: 12px; animation: pulse 1.5s infinite; }
+  h1 { font-size: clamp(27px, 6vw, 42px); line-height: 1.25; margin: 0 0 16px; }
+  .subtitle { font-size: clamp(15px, 3.5vw, 18px); color: #c05b8b; margin-bottom: 34px; }
+  .buttons { width: 100%; min-height: 90px; display: flex; justify-content: center; align-items: center; gap: 18px; }
+  button {
+    border: 0; border-radius: 16px; padding: 16px 28px; font: bold 18px Arial, sans-serif;
+    cursor: pointer; box-shadow: 0 8px 18px #b94c7d26; transition: transform .18s, font-size .2s;
+    touch-action: manipulation;
+  }
+  #yes { color: white; background: #ff4d88; z-index: 5; }
+  #no { color: white; background: #999; position: relative; z-index: 6; }
+  button:active { transform: scale(.96); }
+  .heart {
+    position: fixed; bottom: -40px; pointer-events: none; z-index: 1;
+    animation: floatUp linear forwards; opacity: .8;
+  }
+  @keyframes floatUp { to { transform: translateY(-115vh) rotate(25deg); opacity: 0; } }
+  @keyframes pulse { 50% { transform: scale(1.16); } }
+  .thanks { font-size: clamp(30px, 7vw, 48px); line-height: 1.3; }
+  .thanks-note { margin-top: 18px; font: 17px Arial, sans-serif; color: #c05b8b; }
+  @media (max-width: 480px) {
+    .card { min-height: 410px; padding: 26px 16px; }
+    button { padding: 15px 22px; }
+  }
+</style>
+</head>
+<body>
+  <main class="card" id="card">
+    <div class="small-heart">💗</div>
+    <h1 id="question">Will you go out with me<br>on the 6th? ❤️</h1>
+    <p class="subtitle" id="subtitle">I have something special to ask you...</p>
+    <div class="buttons" id="buttons">
+      <button id="yes" type="button">YES ❤️</button>
+      <button id="no" type="button">NO 🙈</button>
+    </div>
+  </main>
+
+<script>
+  const yes = document.getElementById("yes");
+  const no = document.getElementById("no");
+  const card = document.getElementById("card");
+  const question = document.getElementById("question");
+  const subtitle = document.getElementById("subtitle");
+  const buttons = document.getElementById("buttons");
+  let noCount = 0;
+  let heartTimer;
+
+  function floatHeart() {
+    const heart = document.createElement("span");
+    heart.className = "heart";
+    heart.textContent = ["💖", "💕", "❤️", "💗", "💘"][Math.floor(Math.random() * 5)];
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.fontSize = (16 + Math.random() * 22) + "px";
+    heart.style.animationDuration = (4 + Math.random() * 4) + "s";
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 8500);
+  }
+  heartTimer = setInterval(floatHeart, 420);
+
+  function noClicked() {
+    noCount++;
+
+    // Make YES bigger each time NO is pressed.
+    const scale = Math.min(1 + noCount * 0.22, 2.2);
+    yes.style.transform = `scale(${scale})`;
+    yes.style.fontSize = Math.min(18 + noCount * 3, 42) + "px";
+
+    // Move NO to a new spot inside the visible window.
+    const maxX = Math.max(8, window.innerWidth - no.offsetWidth - 8);
+    const maxY = Math.max(8, window.innerHeight - no.offsetHeight - 8);
+    no.style.position = "fixed";
+    no.style.left = Math.floor(Math.random() * maxX) + "px";
+    no.style.top = Math.floor(Math.random() * maxY) + "px";
+
+    if (noCount >= 5) {
+      // Let YES take over the screen; keep it clickable.
+      card.style.display = "none";
+      yes.style.position = "fixed";
+      yes.style.inset = "0";
+      yes.style.width = "100vw";
+      yes.style.height = "100vh";
+      yes.style.borderRadius = "0";
+      yes.style.transform = "none";
+      yes.style.fontSize = "clamp(42px, 12vw, 72px)";
+      yes.style.zIndex = "20";
+      document.body.appendChild(yes);
+      no.style.display = "none";
+    }
+  }
+
+  no.addEventListener("click", noClicked);
+
+  yes.addEventListener("click", () => {
+    document.body.innerHTML = "";
+    document.body.style.background = "linear-gradient(135deg, #ffe6f0, #ffc4dc, #fff5f8)";
+    const main = document.createElement("main");
+    main.className = "card";
+    main.style.minHeight = "min(75vh, 500px)";
+    const message = document.createElement("div");
+    message.className = "thanks";
+    message.innerHTML = "Thank you<br>for saying YES! ❤️";
+    const note = document.createElement("div");
+    note.className = "thanks-note";
+    note.textContent = "You just made this moment special 💖";
+    main.append(message, note);
+    document.body.appendChild(main);
+    setInterval(() => {
+      const heart = document.createElement("span");
+      heart.className = "heart";
+      heart.textContent = ["💖", "💕", "❤️", "💗"][Math.floor(Math.random() * 4)];
+      heart.style.left = Math.random() * 100 + "vw";
+      heart.style.fontSize = (18 + Math.random() * 24) + "px";
+      heart.style.animationDuration = (4 + Math.random() * 4) + "s";
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 8500);
+    }, 350);
+  });
+</script>
+</body>
+</html>
